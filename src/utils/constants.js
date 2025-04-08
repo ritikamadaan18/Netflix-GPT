@@ -8,8 +8,7 @@ export const API_OPTIONS = {
   method: "GET",
   headers: {
     accept: "application/json",
-    Authorization:
-      "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkNGY3MmQwZjJjZmRlNTg2MWVhNGQ2ZmU4NzAzZDk5ZiIsIm5iZiI6MTc0MTU1MDg3OC4yNDEsInN1YiI6IjY3Y2RmNTFlZjlhNDg2OThlMmUyZTM4NiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.3IMRZt9ZMCtlND9qp2RnJIZEmbRE90buudidxzDO8sc",
+    Authorization: "Bearer " + process.env.REACT_APP_TMDB_KEY,
   },
 };
 
@@ -23,3 +22,8 @@ export const SUPPORTED_LANGUAGES = [
   { identifier: "hindi", name: "Hindi" },
   { identifier: "spanish", name: "Spanish" },
 ];
+
+export const OPENAI_KEY = process.env.REACT_APP_OPENAI_KEY;
+
+// curl https://api.openai.com/v1/models -H "Authorization: Bearer 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"
+// curl.exe -X GET "https://api.openai.com/v1/models" -H "Authorization: Bearer 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"
