@@ -55,42 +55,36 @@ const GptSearchBar = () => {
     return json.results;
   };
 
-  const handleGptSearchClick = async () => {
-    console.log("Button Clicked:", searchText.current.value);
-    console.count("API Call Count"); // To check how many times API is hit
+  const handleGptSearchClick = async (event) => {
+    event.preventDefault(); // Stop event propagation (important for form submissions)
 
-    const gptQuery = `Act as a Movie Recommendation system and suggest some movies for the query : ${searchText.current.value}. Only give me names of 5 movies, comma-separated like this example: Gadar, Sholay, Don, Golmaal, Koi Mil Gaya`;
     try {
-      // const response = await fetch(
-      //   "https://api.openai.com/v1/chat/completions",
-      //   {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       Authorization: `Bearer ${OPENAI_KEY}`,
-      //     },
-      //     body: JSON.stringify({
-      //       model: "gpt-4o",
-      //       messages: [{ role: "user", content: gptQuery }],
-      //     }),
-      //   }
-      // );
+      const gptQuery =
+        "Act as a Movie Recommendation system and suggest some movies for the query : " +
+        searchText.current.value +
+        ". Only give me names of 5 movies, comma-separated like the example result given ahead. Example Result: Gadar, Sholay, Don, Golmaal, Koi Mil Gaya";
 
-      // if (!response.ok) {
-      //   throw new Error(`Error: ${response.status}`);
-      // }
+      const response = await fetch("https://api.cohere.com/v2/chat", {
+        method: "POST",
+        headers: {
+          accept: "application/json",
+          "content-type": "application/json",
+          Authorization: `bearer ${process.env.REACT_APP_COHERE_API_KEY}`, // or use your actual key here
+        },
+        body: JSON.stringify({
+          model: "command-a-03-2025",
+          messages: [
+            {
+              role: "user",
+              content: gptQuery,
+            },
+          ],
+        }),
+      });
 
-      // const gptResults = await response.json();
+      const data = await response.json();
 
-      // const gptMovies = gptResults.choices?.[0]?.message?.content.split(",");
-
-      const gptMovies = [
-        "Andaz Apna Apna",
-        "Hera Pheri",
-        "Chupke Chupke",
-        "Jaane Bhi Do Yaaro",
-        "Padosan",
-      ];
+      const gptMovies = data.message?.content?.[0]?.text.split(",");
 
       // For each movie we call TMDB api
 
@@ -99,13 +93,11 @@ const GptSearchBar = () => {
 
       const tmdbResults = await Promise.all(promiseArray);
 
-      console.log(tmdbResults);
-
       dispatch(
         addGptMovieResult({ movieNames: gptMovies, movieResults: tmdbResults })
       );
     } catch (error) {
-      console.error("Error fetching GPT results:", error);
+      console.error("Error fetching Cohere results:", error);
     }
   };
 
